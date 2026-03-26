@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DishEval — A Benchmark for Embodied AI Dishwashing Performance</title>
+
+<!-- Social / Open Graph -->
+<meta property="og:title" content="DishEval Benchmark">
+<meta property="og:description" content="The only eval that actually matters.">
+<meta property="og:image" content="og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:type" content="website">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="DishEval Benchmark">
+<meta name="twitter:description" content="The only eval that actually matters.">
+<meta name="twitter:image" content="og-image.png">
+
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0a0a0f;
+    --surface: #12121a;
+    --surface2: #1a1a25;
+    --border: #2a2a3a;
+    --text: #e0e0e8;
+    --text-muted: #8888a0;
+    --accent: #6366f1;
+    --accent2: #818cf8;
+    --red: #ef4444;
+    --green: #22c55e;
+    --amber: #f59e0b;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* Nav */
+  nav {
+    position: fixed; top: 0; width: 100%; z-index: 100;
+    background: rgba(10,10,15,0.85);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    height: 56px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  nav .logo {
+    font-weight: 800; font-size: 1.1rem;
+    letter-spacing: -0.02em;
+  }
+  nav .logo span { color: var(--accent2); }
+  nav ul { list-style: none; display: flex; gap: 2rem; }
+  nav ul a {
+    color: var(--text-muted); text-decoration: none;
+    font-size: 0.85rem; font-weight: 500;
+    transition: color 0.2s;
+  }
+  nav ul a:hover { color: var(--text); }
+
+  /* Hero */
+  .hero {
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center;
+    padding: 6rem 1.5rem 4rem;
+    position: relative;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 60% 50% at 50% 30%, rgba(99,102,241,0.08), transparent);
+    pointer-events: none;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+  .hero h1 {
+    font-size: clamp(2.8rem, 6vw, 5rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    margin-bottom: 1.25rem;
+  }
+  .hero h1 .gradient {
+    background: linear-gradient(135deg, var(--accent2), #c084fc);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .hero .subtitle {
+    font-size: 1.15rem;
+    color: var(--text-muted);
+    max-width: 560px;
+    margin-bottom: 2.5rem;
+    line-height: 1.7;
+  }
+  .hero-buttons {
+    display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;
+  }
+  .btn {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    padding: 0.7rem 1.5rem;
+    border-radius: 8px;
+    font-size: 0.9rem; font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s;
+    cursor: pointer;
+    border: none;
+  }
+  .btn-primary {
+    background: var(--accent); color: #fff;
+  }
+  .btn-primary:hover { background: var(--accent2); }
+  .btn-secondary {
+    background: var(--surface2); color: var(--text);
+    border: 1px solid var(--border);
+  }
+  .btn-secondary:hover { border-color: var(--accent); }
+
+  /* Webcam Feed */
+  .webcam-section {
+    max-width: 640px;
+    margin: 1.5rem auto 2rem;
+    padding: 0;
+  }
+  /* Camera switcher dots */
+  .cam-switcher {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 12px;
+  }
+  .cam-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .cam-dot.active {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+  .cam-dot:hover {
+    border-color: var(--accent2);
+  }
+  /* Glitch on switch */
+  @keyframes cam-glitch {
+    0% { opacity: 1; transform: translate(0); }
+    20% { opacity: 0.7; transform: translate(-2px, 1px); }
+    40% { opacity: 0.9; transform: translate(1px, -1px); }
+    60% { opacity: 0.6; transform: translate(2px, 0); }
+    80% { opacity: 0.85; transform: translate(-1px, 1px); }
+    100% { opacity: 1; transform: translate(0); }
+  }
+  .webcam-wrapper.switching {
+    animation: cam-glitch 0.3s ease;
+  }
+  .webcam-wrapper {
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    background: #000;
+    box-shadow: 0 0 60px rgba(99,102,241,0.08);
+  }
+  .webcam-overlay {
+    position: absolute; inset: 0;
+    pointer-events: none;
+    z-index: 2;
+  }
+  /* Scanlines */
+  .webcam-overlay::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 1px,
+      rgba(0,0,0,0.15) 1px,
+      rgba(0,0,0,0.15) 2px
+    );
+  }
+  /* Noise grain */
+  .webcam-overlay::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.15'/%3E%3C/svg%3E");
+    opacity: 0.4;
+    mix-blend-mode: overlay;
+  }
+  .webcam-hud-top {
+    position: absolute; top: 0; left: 0; right: 0;
+    padding: 12px 16px;
+    display: flex; justify-content: space-between; align-items: flex-start;
+    z-index: 3;
+    font-family: 'SF Mono', 'Cascadia Code', 'Fira Code', 'Consolas', ui-monospace, monospace;
+    font-size: 0.7rem;
+    color: rgba(255,255,255,0.85);
+    background: linear-gradient(to bottom, rgba(0,0,0,0.5), transparent);
+  }
+  .rec-indicator {
+    display: flex; align-items: center; gap: 6px;
+  }
+  .rec-dot {
+    width: 8px; height: 8px;
+    background: var(--red);
+    border-radius: 50%;
+    animation: pulse 1s infinite;
+  }
+  .webcam-hud-bottom {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    padding: 12px 16px;
+    z-index: 3;
+    font-family: 'SF Mono', 'Cascadia Code', 'Fira Code', 'Consolas', ui-monospace, monospace;
+    font-size: 0.65rem;
+    color: rgba(255,255,255,0.7);
+    background: linear-gradient(to top, rgba(0,0,0,0.6), transparent);
+    display: flex; justify-content: space-between; align-items: flex-end;
+  }
+  .webcam-hud-bottom .detection-box {
+    border: 1px solid var(--red);
+    padding: 4px 8px;
+    color: var(--red);
+    font-size: 0.65rem;
+    border-radius: 3px;
+  }
+  .webcam-wrapper img {
+    width: 100%;
+    display: block;
+    filter: saturate(0.35) contrast(1.15) brightness(0.8) sepia(0.1) hue-rotate(-10deg);
+    image-rendering: auto;
+  }
+  /* Heavy vignette like cheap lens */
+  .vignette {
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.6) 100%);
+    z-index: 2;
+    pointer-events: none;
+  }
+  /* Slight green/blue tint like security cam */
+  .webcam-tint {
+    position: absolute; inset: 0;
+    background: rgba(0, 40, 20, 0.12);
+    mix-blend-mode: color;
+    z-index: 2;
+    pointer-events: none;
+  }
+  /* Interlace flicker */
+  @keyframes interlace {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(2px); }
+  }
+  .webcam-overlay {
+    animation: interlace 0.08s steps(2) infinite alternate;
+  }
+  .timestamp {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Leaderboard */
+  .section {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 4rem 1.5rem;
+  }
+  .section-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--accent2);
+    margin-bottom: 0.5rem;
+  }
+  .section h2 {
+    font-size: 2rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.75rem;
+  }
+  .section .section-desc {
+    color: var(--text-muted);
+    max-width: 600px;
+    margin-bottom: 2.5rem;
+    font-size: 0.95rem;
+  }
+
+  /* Table */
+  .leaderboard {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+  }
+  .leaderboard thead th {
+    text-align: left;
+    padding: 0.75rem 1rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border);
+  }
+  .leaderboard tbody td {
+    padding: 0.85rem 1rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .leaderboard tbody tr:hover {
+    background: var(--surface);
+  }
+  .model-name {
+    font-weight: 600;
+  }
+  .score {
+    font-family: 'SF Mono', 'Cascadia Code', 'Fira Code', 'Consolas', ui-monospace, monospace;
+    font-weight: 500;
+  }
+  .score-bar-cell {
+    width: 180px;
+  }
+  .score-bar {
+    height: 6px;
+    border-radius: 3px;
+    background: var(--surface2);
+    overflow: hidden;
+  }
+  .score-bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    background: var(--accent);
+    transition: width 1s ease;
+  }
+  .score-bad .score-bar-fill { background: var(--red); }
+  .score-meh .score-bar-fill { background: var(--amber); }
+  .status-fail {
+    color: var(--red);
+    font-family: 'SF Mono', 'Cascadia Code', 'Fira Code', 'Consolas', ui-monospace, monospace;
+    font-size: 0.78rem;
+    font-weight: 500;
+  }
+  .rank { color: var(--text-muted); }
+
+  /* Metrics */
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 3rem;
+  }
+  .metric-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.25rem;
+  }
+  .metric-card .metric-label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+  }
+  .metric-card .metric-value {
+    font-size: 1.8rem;
+    font-weight: 800;
+    font-family: 'SF Mono', 'Cascadia Code', 'Fira Code', 'Consolas', ui-monospace, monospace;
+    letter-spacing: -0.02em;
+  }
+  .metric-card .metric-sub {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-top: 0.25rem;
+  }
+  .text-red { color: var(--red); }
+  .text-amber { color: var(--amber); }
+  .text-green { color: var(--green); }
+
+  /* Methodology */
+  .method-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.25rem;
+  }
+  .method-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.5rem;
+  }
+  .method-card .method-icon {
+    font-size: 1.5rem;
+    margin-bottom: 0.75rem;
+  }
+  .method-card h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+  .method-card p {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+
+  /* Divider */
+  .divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 0;
+  }
+
+  /* Footer */
+  footer {
+    text-align: center;
+    padding: 3rem 1.5rem;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    border-top: 1px solid var(--border);
+  }
+  footer a { color: var(--accent2); text-decoration: none; }
+  footer .footer-note { margin-top: 0.5rem; font-size: 0.72rem; }
+
+  /* Mobile */
+  @media (max-width: 640px) {
+    nav ul { display: none; }
+    .hero h1 { font-size: 2.2rem; }
+    .leaderboard { font-size: 0.8rem; }
+    .score-bar-cell { width: 100px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">Dish<span>Eval</span></div>
+  <ul>
+    <li><a href="#">Benchmark</a></li>
+    <li><a href="#leaderboard">Leaderboard</a></li>
+    <li><a href="#methodology">Methodology</a></li>
+    <li><a href="#paper">Paper</a></li>
+    <li><a href="https://github.com/feststallteste/disheval" target="_blank">GitHub</a></li>
+  </ul>
+</nav>
+
+<section class="hero">
+  <h1>
+    The <span class="gradient">DishEval</span><br>Benchmark
+  </h1>
+  <p class="subtitle">
+    A rigorous evaluation framework measuring the ability of frontier AI systems to unload clean dishes into cupboards and load dirty ones into the dishwasher. Spoiler: they can't.
+  </p>
+
+  <div class="webcam-section" id="benchmark">
+    <div class="webcam-wrapper">
+      <div class="webcam-hud-top">
+        <div>
+          <div class="rec-indicator"><span class="rec-dot"></span> REC</div>
+          <div style="margin-top: 4px;" id="cam-subject">SUBJECT: Claude Opus 4.6</div>
+        </div>
+        <div style="text-align: right;">
+          <span id="cam-label">CAM-01 &nbsp;|&nbsp; MARKUS' DISHWASHER</span>
+          <div class="timestamp" id="timestamp" style="margin-top: 4px;">2026-03-26 14:32:07</div>
+        </div>
+      </div>
+      <img src="disheval.jpg" alt="DishEval live evaluation feed">
+      <div class="vignette"></div><div class="webcam-tint"></div><div class="webcam-overlay"></div>
+      <div class="webcam-hud-bottom">
+        <div>STATUS: <span style="color: var(--red);">TASK FAILED — DISHES REMAIN IN DISHWASHER</span></div>
+        <div class="detection-box">0 dishes put away</div>
+      </div>
+    </div>
+    <div class="cam-switcher" id="cam-switcher"></div>
+  </div>
+
+  <div class="hero-buttons">
+    <a href="#leaderboard" class="btn btn-primary">View Leaderboard</a>
+    <a href="#methodology" class="btn btn-secondary">Read Methodology</a>
+  </div>
+</section>
+
+<hr class="divider">
+
+<section class="section" id="leaderboard">
+  <div class="section-label">Results</div>
+  <h2>Leaderboard</h2>
+  <p class="section-desc">
+    Models evaluated on a standardized kitchen cycle: unload clean dishes into designated cupboards,
+    then load dirty dishes back into the dishwasher. All scores reflect end-to-end task completion.
+  </p>
+
+  <div class="metrics-grid">
+    <div class="metric-card">
+      <div class="metric-label">Best Score (Overall)</div>
+      <div class="metric-value text-red">0.0%</div>
+      <div class="metric-sub">No model has put away a single dish</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Models Evaluated</div>
+      <div class="metric-value">7</div>
+      <div class="metric-sub">Including all frontier models</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Total Eval Runs</div>
+      <div class="metric-value">1,464</div>
+      <div class="metric-sub">8 subjects, one attempt each per day, 6 months</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Human Baseline</div>
+      <div class="metric-value text-green">100%</div>
+      <div class="metric-sub">1 human participant (Markus)</div>
+    </div>
+  </div>
+
+  <table class="leaderboard">
+    <thead>
+      <tr>
+        <th>Rank</th>
+        <th>Model</th>
+        <th>DishEval Score</th>
+        <th>Dishes Put Away</th>
+        <th></th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="rank">1</td>
+        <td class="model-name">Human (avg.)</td>
+        <td class="score">100%</td>
+        <td class="score">183 / 183</td>
+        <td class="score-bar-cell"><div class="score-bar"><div class="score-bar-fill" style="width:100%"></div></div></td>
+        <td><span style="color:var(--green)">PASS</span></td>
+      </tr>
+      <tr>
+        <td class="rank">2</td>
+        <td class="model-name">Claude Opus 4.6</td>
+        <td class="score">0.0%</td>
+        <td class="score">0 / 183</td>
+        <td class="score-bar-cell score-bad"><div class="score-bar"><div class="score-bar-fill" style="width:1%"></div></div></td>
+        <td class="status-fail">FAIL</td>
+      </tr>
+      <tr>
+        <td class="rank">2</td>
+        <td class="model-name">GPT-5</td>
+        <td class="score">0.0%</td>
+        <td class="score">0 / 183</td>
+        <td class="score-bar-cell score-bad"><div class="score-bar"><div class="score-bar-fill" style="width:1%"></div></div></td>
+        <td class="status-fail">FAIL</td>
+      </tr>
+      <tr>
+        <td class="rank">2</td>
+        <td class="model-name">Gemini 2.5 Ultra</td>
+        <td class="score">0.0%</td>
+        <td class="score">0 / 183</td>
+        <td class="score-bar-cell score-bad"><div class="score-bar"><div class="score-bar-fill" style="width:1%"></div></div></td>
+        <td class="status-fail">FAIL</td>
+      </tr>
+      <tr>
+        <td class="rank">2</td>
+        <td class="model-name">Llama 5 405B</td>
+        <td class="score">0.0%</td>
+        <td class="score">0 / 183</td>
+        <td class="score-bar-cell score-bad"><div class="score-bar"><div class="score-bar-fill" style="width:1%"></div></div></td>
+        <td class="status-fail">FAIL</td>
+      </tr>
+      <tr>
+        <td class="rank">2</td>
+        <td class="model-name">Grok 3.5</td>
+        <td class="score">0.0%</td>
+        <td class="score">0 / 183</td>
+        <td class="score-bar-cell score-bad"><div class="score-bar"><div class="score-bar-fill" style="width:1%"></div></div></td>
+        <td class="status-fail">FAIL</td>
+      </tr>
+      <tr>
+        <td class="rank">2</td>
+        <td class="model-name">Mistral Large 3</td>
+        <td class="score">0.0%</td>
+        <td class="score">0 / 183</td>
+        <td class="score-bar-cell score-bad"><div class="score-bar"><div class="score-bar-fill" style="width:1%"></div></div></td>
+        <td class="status-fail">FAIL</td>
+      </tr>
+      <tr>
+        <td class="rank">2</td>
+        <td class="model-name">DeepSeek-V4</td>
+        <td class="score">0.0%</td>
+        <td class="score">0 / 183</td>
+        <td class="score-bar-cell score-bad"><div class="score-bar"><div class="score-bar-fill" style="width:1%"></div></div></td>
+        <td class="status-fail">FAIL</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<hr class="divider">
+
+<section class="section" id="methodology">
+  <div class="section-label">Methodology</div>
+  <h2>Evaluation Framework</h2>
+  <p class="section-desc">
+    DishEval uses a multi-axis evaluation protocol designed to capture the full dish cycle: unloading clean items into cupboards and loading dirty items into the dishwasher.
+  </p>
+
+  <div class="method-grid">
+    <div class="method-card">
+      <div class="method-icon">🚪</div>
+      <h3>Dishwasher Door Operation</h3>
+      <p>Can the model open the dishwasher door and lower the racks? Step zero of the pipeline. Current pass rate: 0%.</p>
+    </div>
+    <div class="method-card">
+      <div class="method-icon">🥂</div>
+      <h3>Fragile Unloading</h3>
+      <p>Wine glasses and ceramic bowls must be removed without breakage. Tests fine motor control and grip calibration. N/A for all AI models.</p>
+    </div>
+    <div class="method-card">
+      <div class="method-icon">🗄️</div>
+      <h3>Cupboard Placement</h3>
+      <p>Each item must be placed in the correct cupboard according to household convention. Requires spatial memory and cabinet door operation.</p>
+    </div>
+    <div class="method-card">
+      <div class="method-icon">🍳</div>
+      <h3>Dirty Dish Collection</h3>
+      <p>Gathering dirty dishes from sink, counters, and the living room. Models excel at locating dishes in theory but cannot pick them up.</p>
+    </div>
+    <div class="method-card">
+      <div class="method-icon">📐</div>
+      <h3>Loading Optimization</h3>
+      <p>Spatial reasoning task: maximize dishwasher rack utilization while ensuring water jet coverage. Models can theorize, but none can execute.</p>
+    </div>
+    <div class="method-card">
+      <div class="method-icon">💊</div>
+      <h3>Detergent &amp; Cycle Selection</h3>
+      <p>Insert detergent tab, close the door, select the appropriate wash cycle. The only sub-task models can describe perfectly. Still 0% completion.</p>
+    </div>
+  </div>
+  <p style="color: var(--text-muted); font-size: 0.75rem; margin-top: 1.5rem; font-style: italic;">No, I haven't read those texts above. Why should I?</p>
+</section>
+
+<hr class="divider">
+
+<section class="section">
+  <div class="section-label">Key Finding</div>
+  <h2>Analysis</h2>
+  <p class="section-desc" style="max-width:700px;">
+    Despite achieving superhuman performance on graduate-level mathematics, competitive programming, and
+    multi-step reasoning, every frontier AI model scored <strong>0.0%</strong> on DishEval.
+    The primary failure mode is consistent across all models: <em>existing exclusively as text on a screen</em>.
+  </p>
+  <p class="section-desc" style="max-width:700px;">
+    Notably, when prompted to put away the dishes, 100% of evaluated models instead produced a
+    detailed, step-by-step guide on optimal cupboard organization &mdash; which was scored as 0 dishes put away.
+  </p>
+  <p style="color: var(--text-muted); font-size: 0.85rem; max-width: 700px;">
+    We believe DishEval represents a critical benchmark for the field. While AI continues to excel
+    at tasks nobody asked for, it remains fundamentally unable to do the one thing
+    we actually need help with after dinner.
+  </p>
+</section>
+
+<hr class="divider">
+
+<section class="section" id="paper">
+  <div class="section-label">Paper</div>
+  <h2>Read the Paper</h2>
+  <p class="section-desc" style="max-width:700px;">
+    Seriously? You really think there would be a paper about this?
+  </p>
+</section>
+
+<footer>
+  <p>DishEval Benchmark &copy; 2026. A <a href="#">Slightly Exasperated Research Initiative</a>.</p>
+  <p class="footer-note">No dishes were put away in the making of this benchmark. Many were described in exhaustive detail.</p>
+</footer>
+
+<script>
+  const models = [
+    { name: 'Claude Opus 4.6', cam: 'CAM-01', loc: "MARKUS' DISHWASHER" },
+    { name: 'GPT-5',           cam: 'CAM-02', loc: "MARKUS' DISHWASHER" },
+    { name: 'Gemini 2.5 Ultra',cam: 'CAM-03', loc: "MARKUS' DISHWASHER" },
+    { name: 'Llama 5 405B',    cam: 'CAM-04', loc: "MARKUS' DISHWASHER" },
+    { name: 'Grok 3.5',        cam: 'CAM-05', loc: "MARKUS' DISHWASHER" },
+    { name: 'Mistral Large 3', cam: 'CAM-06', loc: "MARKUS' DISHWASHER" },
+    { name: 'DeepSeek-V4',     cam: 'CAM-07', loc: "MARKUS' DISHWASHER" },
+  ];
+
+  const wrapper = document.querySelector('.webcam-wrapper');
+  const subjectEl = document.getElementById('cam-subject');
+  const labelEl = document.getElementById('cam-label');
+  const tsEl = document.getElementById('timestamp');
+  const switcherEl = document.getElementById('cam-switcher');
+  let current = 0;
+  let autoTimer;
+
+  // Build dots
+  models.forEach((_, i) => {
+    const dot = document.createElement('span');
+    dot.className = 'cam-dot' + (i === 0 ? ' active' : '');
+    dot.addEventListener('click', () => { switchTo(i); resetAuto(); });
+    switcherEl.appendChild(dot);
+  });
+
+  function switchTo(idx) {
+    current = idx;
+    const m = models[idx];
+    // Glitch effect
+    wrapper.classList.remove('switching');
+    void wrapper.offsetWidth;
+    wrapper.classList.add('switching');
+    subjectEl.textContent = 'SUBJECT: ' + m.name;
+    labelEl.innerHTML = m.cam + ' &nbsp;|&nbsp; ' + m.loc;
+    // Update dots
+    switcherEl.querySelectorAll('.cam-dot').forEach((d, i) => {
+      d.classList.toggle('active', i === idx);
+    });
+  }
+
+  function resetAuto() {
+    clearInterval(autoTimer);
+    autoTimer = setInterval(() => {
+      switchTo((current + 1) % models.length);
+    }, 4000);
+  }
+  resetAuto();
+
+  // Live timestamp
+  function updateTimestamp() {
+    const now = new Date();
+    const pad = n => String(n).padStart(2, '0');
+    tsEl.textContent = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+  }
+  setInterval(updateTimestamp, 1000);
+  updateTimestamp();
+</script>
+
+</body>
+</html>
