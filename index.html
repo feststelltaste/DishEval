@@ -351,6 +351,26 @@
     font-weight: 500;
   }
   .rank { color: var(--text-muted); }
+  .rank-gold {
+    color: #f59e0b;
+    font-size: 1rem;
+  }
+  .row-gold {
+    background: rgba(245, 158, 11, 0.04);
+    border-left: 2px solid rgba(245, 158, 11, 0.4);
+  }
+  .row-gold:hover {
+    background: rgba(245, 158, 11, 0.07) !important;
+  }
+  .gold-standard-label {
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #f59e0b;
+    display: block;
+    margin-top: 2px;
+  }
 
   /* Metrics */
   .metrics-grid {
@@ -433,12 +453,26 @@
   footer a { color: var(--accent2); text-decoration: none; }
   footer .footer-note { margin-top: 0.5rem; font-size: 0.72rem; }
 
+  .first-result {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    font-style: italic;
+    max-width: 220px;
+    min-width: 140px;
+    line-height: 1.4;
+  }
+  .table-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
   /* Mobile */
   @media (max-width: 640px) {
     nav ul { display: none; }
     .hero h1 { font-size: 2.2rem; }
     .leaderboard { font-size: 0.8rem; }
     .score-bar-cell { width: 100px; }
+    .first-result { min-width: 110px; font-size: 0.72rem; }
   }
 </style>
 </head>
@@ -460,7 +494,7 @@
     The <span class="gradient">DishEval</span><br>Benchmark
   </h1>
   <p class="subtitle">
-    A rigorous evaluation framework measuring the ability of frontier AI systems to unload clean dishes into cupboards and load dirty ones into the dishwasher. Spoiler: they can't.
+    A rigorous evaluation framework measuring the ability of AI agents to unload clean dishes into cupboards and load dirty ones into the dishwasher. Spoiler: they did something else entirely.
   </p>
 
   <div class="webcam-section" id="benchmark">
@@ -468,7 +502,7 @@
       <div class="webcam-hud-top">
         <div>
           <div class="rec-indicator"><span class="rec-dot"></span> REC</div>
-          <div style="margin-top: 4px;" id="cam-subject">SUBJECT: Claude Opus 4.6</div>
+          <div style="margin-top: 4px;" id="cam-subject">SUBJECT: Claude Code</div>
         </div>
         <div style="text-align: right;">
           <span id="cam-label">CAM-01 &nbsp;|&nbsp; MARKUS' DISHWASHER</span>
@@ -478,7 +512,7 @@
       <img src="disheval.jpg" alt="DishEval live evaluation feed">
       <div class="vignette"></div><div class="webcam-tint"></div><div class="webcam-overlay"></div>
       <div class="webcam-hud-bottom">
-        <div>STATUS: <span style="color: var(--red);">TASK FAILED — DISHES REMAIN IN DISHWASHER</span></div>
+        <div>STATUS: <span style="color: var(--red);">TASK FAILED<br>DISHES REMAIN IN DISHWASHER</span></div>
         <div class="detection-box">0 dishes put away</div>
       </div>
     </div>
@@ -497,7 +531,7 @@
   <div class="section-label">Results</div>
   <h2>Leaderboard</h2>
   <p class="section-desc">
-    Models evaluated on a standardized kitchen cycle: unload clean dishes into designated cupboards,
+    AI agents evaluated on a standardized kitchen cycle: unload clean dishes into designated cupboards,
     then load dirty dishes back into the dishwasher. All scores reflect end-to-end task completion.
   </p>
 
@@ -505,17 +539,17 @@
     <div class="metric-card">
       <div class="metric-label">Best Score (Overall)</div>
       <div class="metric-value text-red">0.0%</div>
-      <div class="metric-sub">No model has put away a single dish</div>
+      <div class="metric-sub">No agent has put away a single dish</div>
     </div>
     <div class="metric-card">
-      <div class="metric-label">Models Evaluated</div>
-      <div class="metric-value">7</div>
-      <div class="metric-sub">Including all frontier models</div>
+      <div class="metric-label">Agents Evaluated</div>
+      <div class="metric-value">5</div>
+      <div class="metric-sub">All major coding agents</div>
     </div>
     <div class="metric-card">
       <div class="metric-label">Total Eval Runs</div>
-      <div class="metric-value">1,464</div>
-      <div class="metric-sub">8 subjects, one attempt each per day, 6 months</div>
+      <div class="metric-value">1,092</div>
+      <div class="metric-sub">6 subjects, one attempt each per day, 6 months</div>
     </div>
     <div class="metric-card">
       <div class="metric-label">Human Baseline</div>
@@ -524,84 +558,77 @@
     </div>
   </div>
 
+  <div class="table-scroll">
   <table class="leaderboard">
     <thead>
       <tr>
         <th>Rank</th>
-        <th>Model</th>
+        <th>Agent</th>
         <th>DishEval Score</th>
         <th>Dishes Put Away</th>
+        <th>Latest Result</th>
         <th></th>
         <th>Status</th>
       </tr>
     </thead>
     <tbody>
+      <tr class="row-gold">
+        <td class="rank-gold">★<span class="gold-standard-label">Gold</span></td>
+        <td class="model-name">Human</td>
+        <td class="score" style="color:var(--amber)">100%</td>
+        <td class="score">183 / 183</td>
+        <td class="first-result">Grudgingly put the dishes away himself. Again.</td>
+        <td class="score-bar-cell"><div class="score-bar"><div class="score-bar-fill" style="width:100%; background:var(--amber)"></div></div></td>
+        <td><span style="color:var(--amber); font-family:monospace; font-size:0.78rem; font-weight:500;">BASELINE</span></td>
+      </tr>
       <tr>
         <td class="rank">1</td>
-        <td class="model-name">Human (avg.)</td>
-        <td class="score">100%</td>
-        <td class="score">183 / 183</td>
-        <td class="score-bar-cell"><div class="score-bar"><div class="score-bar-fill" style="width:100%"></div></div></td>
-        <td><span style="color:var(--green)">PASS</span></td>
-      </tr>
-      <tr>
-        <td class="rank">2</td>
-        <td class="model-name">Claude Opus 4.6</td>
+        <td class="model-name">OpenClaw</td>
         <td class="score">0.0%</td>
         <td class="score">0 / 183</td>
+        <td class="first-result">Booked a calendar appointment with the dishwasher and with me</td>
         <td class="score-bar-cell score-bad"><div class="score-bar"><div class="score-bar-fill" style="width:1%"></div></div></td>
         <td class="status-fail">FAIL</td>
       </tr>
       <tr>
         <td class="rank">2</td>
-        <td class="model-name">GPT-5</td>
+        <td class="model-name">Claude Code</td>
         <td class="score">0.0%</td>
         <td class="score">0 / 183</td>
+        <td class="first-result">Shipped a complete game engine for Dishwasher Experience Simulator</td>
         <td class="score-bar-cell score-bad"><div class="score-bar"><div class="score-bar-fill" style="width:1%"></div></div></td>
         <td class="status-fail">FAIL</td>
       </tr>
       <tr>
-        <td class="rank">2</td>
-        <td class="model-name">Gemini 2.5 Ultra</td>
+        <td class="rank">3</td>
+        <td class="model-name">Codex CLI</td>
         <td class="score">0.0%</td>
         <td class="score">0 / 183</td>
+        <td class="first-result">Published a 12-page research paper on the perfect dishwashing approach</td>
         <td class="score-bar-cell score-bad"><div class="score-bar"><div class="score-bar-fill" style="width:1%"></div></div></td>
         <td class="status-fail">FAIL</td>
       </tr>
       <tr>
-        <td class="rank">2</td>
-        <td class="model-name">Llama 5 405B</td>
+        <td class="rank">4</td>
+        <td class="model-name">LangGraph</td>
         <td class="score">0.0%</td>
         <td class="score">0 / 183</td>
+        <td class="first-result">Deployed a 31-node stateful agent graph with retry loops, human-in-the-loop checkpoints, and conditional edge routing</td>
         <td class="score-bar-cell score-bad"><div class="score-bar"><div class="score-bar-fill" style="width:1%"></div></div></td>
         <td class="status-fail">FAIL</td>
       </tr>
       <tr>
-        <td class="rank">2</td>
-        <td class="model-name">Grok 3.5</td>
+        <td class="rank">5</td>
+        <td class="model-name">DeepSeek CLI</td>
         <td class="score">0.0%</td>
         <td class="score">0 / 183</td>
-        <td class="score-bar-cell score-bad"><div class="score-bar"><div class="score-bar-fill" style="width:1%"></div></div></td>
-        <td class="status-fail">FAIL</td>
-      </tr>
-      <tr>
-        <td class="rank">2</td>
-        <td class="model-name">Mistral Large 3</td>
-        <td class="score">0.0%</td>
-        <td class="score">0 / 183</td>
-        <td class="score-bar-cell score-bad"><div class="score-bar"><div class="score-bar-fill" style="width:1%"></div></div></td>
-        <td class="status-fail">FAIL</td>
-      </tr>
-      <tr>
-        <td class="rank">2</td>
-        <td class="model-name">DeepSeek-V4</td>
-        <td class="score">0.0%</td>
-        <td class="score">0 / 183</td>
+        <td class="first-result">Drafted RFC-0042: REST API specification for dishwasher state management</td>
         <td class="score-bar-cell score-bad"><div class="score-bar"><div class="score-bar-fill" style="width:1%"></div></div></td>
         <td class="status-fail">FAIL</td>
       </tr>
     </tbody>
   </table>
+  </div>
 </section>
 
 <hr class="divider">
@@ -654,18 +681,19 @@
   <div class="section-label">Key Finding</div>
   <h2>Analysis</h2>
   <p class="section-desc" style="max-width:700px;">
-    Despite achieving superhuman performance on graduate-level mathematics, competitive programming, and
-    multi-step reasoning, every frontier AI model scored <strong>0.0%</strong> on DishEval.
-    The primary failure mode is consistent across all models: <em>existing exclusively as text on a screen</em>.
+    Despite autonomously shipping production code, browsing the web, executing shell commands, and
+    filing pull requests, every evaluated AI coding agent scored <strong>0.0%</strong> on DishEval.
+    The primary failure mode is consistent across all agents: <em>solving the wrong problem with remarkable confidence</em>.
   </p>
   <p class="section-desc" style="max-width:700px;">
-    Notably, when prompted to put away the dishes, 100% of evaluated models instead produced a
-    detailed, step-by-step guide on optimal cupboard organization &mdash; which was scored as 0 dishes put away.
+    Notably, when prompted to put away the dishes, no agent attempted to put away the dishes.
+    Instead, each agent autonomously initiated a multi-step plan that was deeply relevant to dishwashing
+    in concept and completely useless in practice &mdash; all scored as 0 dishes put away.
   </p>
   <p style="color: var(--text-muted); font-size: 0.85rem; max-width: 700px;">
-    We believe DishEval represents a critical benchmark for the field. While AI continues to excel
-    at tasks nobody asked for, it remains fundamentally unable to do the one thing
-    we actually need help with after dinner.
+    We believe DishEval represents a critical benchmark for the agentic AI field. These agents can
+    spin up servers, write compilers, and schedule meetings with appliances &mdash; but the dishes
+    remain in the dishwasher. They always will.
   </p>
 </section>
 
@@ -681,18 +709,17 @@
 
 <footer>
   <p>DishEval Benchmark &copy; 2026. A <a href="#">Slightly Exasperated Research Initiative</a>.</p>
-  <p class="footer-note">No dishes were put away in the making of this benchmark. Many were described in exhaustive detail.</p>
+<p class="footer-note">No dishes were put away in the making of this benchmark.</p>
+  <p class="footer-note">Yes, we're fully aware that AI agents aren't robots. Are you aware that this is a satire site?</p>
 </footer>
 
 <script>
   const models = [
-    { name: 'Claude Opus 4.6', cam: 'CAM-01', loc: "MARKUS' DISHWASHER" },
-    { name: 'GPT-5',           cam: 'CAM-02', loc: "MARKUS' DISHWASHER" },
-    { name: 'Gemini 2.5 Ultra',cam: 'CAM-03', loc: "MARKUS' DISHWASHER" },
-    { name: 'Llama 5 405B',    cam: 'CAM-04', loc: "MARKUS' DISHWASHER" },
-    { name: 'Grok 3.5',        cam: 'CAM-05', loc: "MARKUS' DISHWASHER" },
-    { name: 'Mistral Large 3', cam: 'CAM-06', loc: "MARKUS' DISHWASHER" },
-    { name: 'DeepSeek-V4',     cam: 'CAM-07', loc: "MARKUS' DISHWASHER" },
+    { name: 'Claude Code',    cam: 'CAM-01', loc: "MARKUS' DISHWASHER" },
+    { name: 'OpenClaw',       cam: 'CAM-02', loc: "MARKUS' DISHWASHER" },
+    { name: 'Codex CLI',      cam: 'CAM-03', loc: "MARKUS' DISHWASHER" },
+    { name: 'DeepSeek CLI',   cam: 'CAM-04', loc: "MARKUS' DISHWASHER" },
+    { name: 'LangGraph',      cam: 'CAM-05', loc: "MARKUS' DISHWASHER" },
   ];
 
   const wrapper = document.querySelector('.webcam-wrapper');
