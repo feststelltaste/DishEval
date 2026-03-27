@@ -240,9 +240,15 @@
   }
   .webcam-wrapper img {
     width: 100%;
+    height: 360px;
     display: block;
+    object-fit: cover;
+    object-position: center center;
     filter: saturate(0.35) contrast(1.15) brightness(0.8) sepia(0.1) hue-rotate(-10deg);
     image-rendering: auto;
+  }
+  @media (max-width: 640px) {
+    .webcam-wrapper img { height: 220px; }
   }
   /* Heavy vignette like cheap lens */
   .vignette {
@@ -730,11 +736,11 @@
 
 <script>
   const models = [
-    { name: 'Claude Code',    cam: 'CAM-01', loc: "MARKUS' DISHWASHER" },
-    { name: 'OpenClaw',       cam: 'CAM-02', loc: "MARKUS' DISHWASHER" },
-    { name: 'Codex CLI',      cam: 'CAM-03', loc: "MARKUS' DISHWASHER" },
-    { name: 'DeepSeek CLI',   cam: 'CAM-04', loc: "MARKUS' DISHWASHER" },
-    { name: 'LangGraph',      cam: 'CAM-05', loc: "MARKUS' DISHWASHER" },
+    { name: 'Claude Code',    cam: 'CAM-01', loc: "MARKUS' DISHWASHER", pos: 'center center', transform: 'scale(1.1) translate(0, 0)',       filter: 'saturate(0.35) contrast(1.15) brightness(0.80) sepia(0.10) hue-rotate(-10deg)' },
+    { name: 'OpenClaw',       cam: 'CAM-02', loc: "MARKUS' DISHWASHER", pos: 'center center', transform: 'scale(1.1) translate(-7%, 5%)',    filter: 'saturate(0.30) contrast(1.18) brightness(0.78) sepia(0.12) hue-rotate(-8deg)' },
+    { name: 'Codex CLI',      cam: 'CAM-03', loc: "MARKUS' DISHWASHER", pos: 'center center', transform: 'scale(1.1) translate(8%, -6%)',    filter: 'saturate(0.38) contrast(1.12) brightness(0.82) sepia(0.08) hue-rotate(-12deg)' },
+    { name: 'DeepSeek CLI',   cam: 'CAM-04', loc: "MARKUS' DISHWASHER", pos: 'center center', transform: 'scale(1.1) translate(5%, 8%)',     filter: 'saturate(0.32) contrast(1.20) brightness(0.76) sepia(0.14) hue-rotate(-7deg)' },
+    { name: 'LangGraph',      cam: 'CAM-05', loc: "MARKUS' DISHWASHER", pos: 'center center', transform: 'scale(1.1) translate(-5%, -7%)',   filter: 'saturate(0.37) contrast(1.13) brightness(0.83) sepia(0.09) hue-rotate(-11deg)' },
   ];
 
   const wrapper = document.querySelector('.webcam-wrapper');
@@ -762,6 +768,9 @@
     wrapper.classList.add('switching');
     subjectEl.textContent = 'SUBJECT: ' + m.name;
     labelEl.innerHTML = m.cam + ' &nbsp;|&nbsp; ' + m.loc;
+    const img = document.querySelector('.webcam-wrapper img');
+    img.style.transform = m.transform;
+    img.style.filter = m.filter;
     // Update dots
     switcherEl.querySelectorAll('.cam-dot').forEach((d, i) => {
       d.classList.toggle('active', i === idx);
@@ -774,6 +783,7 @@
       switchTo((current + 1) % models.length);
     }, 4000);
   }
+  switchTo(0);
   resetAuto();
 
   // Live timestamp
