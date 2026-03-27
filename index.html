@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>DishEval — A Benchmark for Embodied AI Dishwashing Performance</title>
 
+<meta name="description" content="The only eval that actually matters.">
+
 <!-- Social / Open Graph -->
 <meta property="og:title" content="DishEval Benchmark">
 <meta property="og:description" content="The only eval that actually matters.">
@@ -520,7 +522,7 @@
     The <span class="gradient">DishEval</span><br>Benchmark
   </h1>
   <p class="subtitle">
-    A rigorous evaluation framework measuring the ability of AI agents to unload clean dishes into cupboards and load dirty ones into the dishwasher. Spoiler: they did something else entirely.
+    A rigorous evaluation framework measuring the ability of AI agents to unload clean dishes into cupboards and load dirty ones into the dishwasher.
   </p>
 
   <div class="webcam-section" id="benchmark">
@@ -736,11 +738,11 @@
 
 <script>
   const models = [
-    { name: 'Claude Code',    cam: 'CAM-01', loc: "MARKUS' DISHWASHER", pos: 'center center', transform: 'scale(1.1) translate(0, 0)',       filter: 'saturate(0.35) contrast(1.15) brightness(0.80) sepia(0.10) hue-rotate(-10deg)' },
-    { name: 'OpenClaw',       cam: 'CAM-02', loc: "MARKUS' DISHWASHER", pos: 'center center', transform: 'scale(1.1) translate(-7%, 5%)',    filter: 'saturate(0.30) contrast(1.18) brightness(0.78) sepia(0.12) hue-rotate(-8deg)' },
-    { name: 'Codex CLI',      cam: 'CAM-03', loc: "MARKUS' DISHWASHER", pos: 'center center', transform: 'scale(1.1) translate(8%, -6%)',    filter: 'saturate(0.38) contrast(1.12) brightness(0.82) sepia(0.08) hue-rotate(-12deg)' },
-    { name: 'DeepSeek CLI',   cam: 'CAM-04', loc: "MARKUS' DISHWASHER", pos: 'center center', transform: 'scale(1.1) translate(5%, 8%)',     filter: 'saturate(0.32) contrast(1.20) brightness(0.76) sepia(0.14) hue-rotate(-7deg)' },
-    { name: 'LangGraph',      cam: 'CAM-05', loc: "MARKUS' DISHWASHER", pos: 'center center', transform: 'scale(1.1) translate(-5%, -7%)',   filter: 'saturate(0.37) contrast(1.13) brightness(0.83) sepia(0.09) hue-rotate(-11deg)' },
+    { name: 'Claude Code',    cam: 'CAM-01', loc: "MARKUS' DISHWASHER", pos: 'center center', transform: 'scale(1.2) translate(0, 0)',       filter: 'saturate(0.35) contrast(1.15) brightness(0.80) sepia(0.10) hue-rotate(-10deg)' },
+    { name: 'OpenClaw',       cam: 'CAM-02', loc: "MARKUS' DISHWASHER", pos: 'center center', transform: 'scale(1.2) translate(-7%, 5%)',    filter: 'saturate(0.30) contrast(1.18) brightness(0.78) sepia(0.12) hue-rotate(-8deg)' },
+    { name: 'Codex CLI',      cam: 'CAM-03', loc: "MARKUS' DISHWASHER", pos: 'center center', transform: 'scale(1.2) translate(8%, -6%)',    filter: 'saturate(0.38) contrast(1.12) brightness(0.82) sepia(0.08) hue-rotate(-12deg)' },
+    { name: 'DeepSeek CLI',   cam: 'CAM-04', loc: "MARKUS' DISHWASHER", pos: 'center center', transform: 'scale(1.2) translate(5%, 8%)',     filter: 'saturate(0.32) contrast(1.20) brightness(0.76) sepia(0.14) hue-rotate(-7deg)' },
+    { name: 'LangGraph',      cam: 'CAM-05', loc: "MARKUS' DISHWASHER", pos: 'center center', transform: 'scale(1.2) translate(-5%, -7%)',   filter: 'saturate(0.37) contrast(1.13) brightness(0.83) sepia(0.09) hue-rotate(-11deg)' },
   ];
 
   const wrapper = document.querySelector('.webcam-wrapper');
