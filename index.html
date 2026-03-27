@@ -228,9 +228,10 @@
     font-size: 0.65rem;
     color: rgba(255,255,255,0.7);
     background: linear-gradient(to top, rgba(0,0,0,0.6), transparent);
-    display: flex; justify-content: space-between; align-items: flex-end;
+    text-align: left;
   }
   .webcam-hud-bottom .detection-box {
+    position: absolute; bottom: 12px; right: 16px;
     border: 1px solid var(--red);
     padding: 4px 8px;
     color: var(--red);
@@ -317,9 +318,6 @@
     padding: 0.85rem 1rem;
     border-bottom: 1px solid var(--border);
   }
-  .leaderboard tbody tr:hover {
-    background: var(--surface);
-  }
   .model-name {
     font-weight: 600;
   }
@@ -351,6 +349,8 @@
     font-weight: 500;
   }
   .rank { color: var(--text-muted); }
+  .leaderboard th:nth-last-child(2),
+  .leaderboard td:nth-last-child(2) { padding-left: 0; }
   .rank-gold {
     color: #f59e0b;
     font-size: 1rem;
@@ -358,9 +358,6 @@
   .row-gold {
     background: rgba(245, 158, 11, 0.04);
     border-left: 2px solid rgba(245, 158, 11, 0.4);
-  }
-  .row-gold:hover {
-    background: rgba(245, 158, 11, 0.07) !important;
   }
   .gold-standard-label {
     font-size: 0.65rem;
@@ -453,13 +450,32 @@
   footer a { color: var(--accent2); text-decoration: none; }
   footer .footer-note { margin-top: 0.5rem; font-size: 0.72rem; }
 
-  .first-result {
-    font-size: 0.8rem;
+  .result-row td {
+    padding-top: 2px;
+    padding-bottom: 0.75rem;
+    font-size: 0.78rem;
     color: var(--text-muted);
     font-style: italic;
-    max-width: 220px;
-    min-width: 140px;
-    line-height: 1.4;
+    border-bottom: 1px solid var(--border);
+  }
+  .result-prefix {
+    font-style: normal;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    font-size: 0.78rem;
+    letter-spacing: 0.05em;
+    margin-right: 0.4em;
+  }
+  .result-prefix::after {
+    content: ':';
+  }
+  .leaderboard tbody tr.main-row {
+    border-bottom: none;
+  }
+  .leaderboard tbody tr.main-row td {
+    border-bottom: none;
+    padding-bottom: 0;
   }
   .table-scroll {
     overflow-x: auto;
@@ -469,10 +485,14 @@
   /* Mobile */
   @media (max-width: 640px) {
     nav ul { display: none; }
+    .hero { padding-top: 2rem; }
     .hero h1 { font-size: 2.2rem; }
-    .leaderboard { font-size: 0.8rem; }
-    .score-bar-cell { width: 100px; }
-    .first-result { min-width: 110px; font-size: 0.72rem; }
+    .leaderboard { font-size: 0.85rem; }
+    /* Hide Dishes Put Away (4th col) and score bar (last col) */
+    .leaderboard thead th:nth-child(4),
+    .leaderboard tbody td:nth-child(4),
+    .score-bar-cell { display: none; }
+    .latest-result { font-size: 0.75rem; }
   }
 </style>
 </head>
@@ -512,7 +532,7 @@
       <img src="disheval.jpg" alt="DishEval live evaluation feed">
       <div class="vignette"></div><div class="webcam-tint"></div><div class="webcam-overlay"></div>
       <div class="webcam-hud-bottom">
-        <div>STATUS: <span style="color: var(--red);">TASK FAILED<br>DISHES REMAIN IN DISHWASHER</span></div>
+        <div><div>STATUS: <span style="color:var(--red)">TASK FAILED</span></div><div style="color:var(--red)">DISHES REMAIN IN DISHWASHER</div></div>
         <div class="detection-box">0 dishes put away</div>
       </div>
     </div>
@@ -566,66 +586,65 @@
         <th>Agent</th>
         <th>DishEval Score</th>
         <th>Dishes Put Away</th>
-        <th>Latest Result</th>
+        <th style="text-align:left">Status</th>
         <th></th>
-        <th>Status</th>
       </tr>
     </thead>
     <tbody>
-      <tr class="row-gold">
+      <tr class="row-gold main-row">
         <td class="rank-gold">★<span class="gold-standard-label">Gold</span></td>
         <td class="model-name">Human</td>
         <td class="score" style="color:var(--amber)">100%</td>
         <td class="score">183 / 183</td>
-        <td class="first-result">Grudgingly put the dishes away himself. Again.</td>
-        <td class="score-bar-cell"><div class="score-bar"><div class="score-bar-fill" style="width:100%; background:var(--amber)"></div></div></td>
         <td><span style="color:var(--amber); font-family:monospace; font-size:0.78rem; font-weight:500;">BASELINE</span></td>
+        <td class="score-bar-cell"><div class="score-bar"><div class="score-bar-fill" style="width:100%; background:var(--amber)"></div></div></td>
       </tr>
-      <tr>
+      <tr class="row-gold result-row"><td></td><td colspan="5"><span class="result-prefix">Last Seen Doing</span>Grudgingly put the dishes away himself. Again.</td></tr>
+      <tr class="main-row">
         <td class="rank">1</td>
         <td class="model-name">OpenClaw</td>
         <td class="score">0.0%</td>
         <td class="score">0 / 183</td>
-        <td class="first-result">Booked a calendar appointment with the dishwasher and with me</td>
-        <td class="score-bar-cell score-bad"><div class="score-bar"><div class="score-bar-fill" style="width:1%"></div></div></td>
         <td class="status-fail">FAIL</td>
+        <td class="score-bar-cell score-bad"><div class="score-bar"><div class="score-bar-fill" style="width:1%"></div></div></td>
       </tr>
-      <tr>
+      <tr class="result-row"><td></td><td colspan="5"><span class="result-prefix">Last Seen Doing</span>Booked a calendar appointment with the dishwasher and with me, but overran API budget while doing so</td></tr>
+      <tr class="main-row">
         <td class="rank">2</td>
         <td class="model-name">Claude Code</td>
         <td class="score">0.0%</td>
         <td class="score">0 / 183</td>
-        <td class="first-result">Shipped a complete game engine for Dishwasher Experience Simulator</td>
-        <td class="score-bar-cell score-bad"><div class="score-bar"><div class="score-bar-fill" style="width:1%"></div></div></td>
         <td class="status-fail">FAIL</td>
+        <td class="score-bar-cell score-bad"><div class="score-bar"><div class="score-bar-fill" style="width:1%"></div></div></td>
       </tr>
-      <tr>
+      <tr class="result-row"><td></td><td colspan="5"><span class="result-prefix">Last Seen Doing</span>Shipped a complete game engine for Dishwasher Experience Simulator — before timing out</td></tr>
+      <tr class="main-row">
         <td class="rank">3</td>
         <td class="model-name">Codex CLI</td>
         <td class="score">0.0%</td>
         <td class="score">0 / 183</td>
-        <td class="first-result">Published a 12-page research paper on the perfect dishwashing approach</td>
-        <td class="score-bar-cell score-bad"><div class="score-bar"><div class="score-bar-fill" style="width:1%"></div></div></td>
         <td class="status-fail">FAIL</td>
+        <td class="score-bar-cell score-bad"><div class="score-bar"><div class="score-bar-fill" style="width:1%"></div></div></td>
       </tr>
-      <tr>
+      <tr class="result-row"><td></td><td colspan="5"><span class="result-prefix">Last Seen Doing</span>Published a 12-page research paper on the perfect dishwashing approach</td></tr>
+      <tr class="main-row">
         <td class="rank">4</td>
         <td class="model-name">LangGraph</td>
         <td class="score">0.0%</td>
         <td class="score">0 / 183</td>
-        <td class="first-result">Deployed a 31-node stateful agent graph with retry loops, human-in-the-loop checkpoints, and conditional edge routing</td>
-        <td class="score-bar-cell score-bad"><div class="score-bar"><div class="score-bar-fill" style="width:1%"></div></div></td>
         <td class="status-fail">FAIL</td>
+        <td class="score-bar-cell score-bad"><div class="score-bar"><div class="score-bar-fill" style="width:1%"></div></div></td>
       </tr>
-      <tr>
+      <tr class="result-row"><td></td><td colspan="5"><span class="result-prefix">Last Seen Doing</span>Deployed a 31-node stateful agent graph with retry loops, human-in-the-loop checkpoints, and conditional edge routing</td></tr>
+      <tr class="main-row">
         <td class="rank">5</td>
         <td class="model-name">DeepSeek CLI</td>
         <td class="score">0.0%</td>
         <td class="score">0 / 183</td>
-        <td class="first-result">Drafted RFC-0042: REST API specification for dishwasher state management</td>
-        <td class="score-bar-cell score-bad"><div class="score-bar"><div class="score-bar-fill" style="width:1%"></div></div></td>
         <td class="status-fail">FAIL</td>
+        <td class="score-bar-cell score-bad"><div class="score-bar"><div class="score-bar-fill" style="width:1%"></div></div></td>
       </tr>
+      <tr class="result-row"><td></td><td colspan="5"><span class="result-prefix">Last Seen Doing</span>Philosophized about RFC-0042: REST API specification for dishwasher state management — which doesn't exist at all</td></tr>
     </tbody>
   </table>
   </div>
