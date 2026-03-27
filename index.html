@@ -501,6 +501,25 @@
     .leaderboard tbody td:nth-child(4),
     .score-bar-cell { display: none; }
     .latest-result { font-size: 0.75rem; }
+    /* Move agent name to its own line below rank */
+    .leaderboard tbody tr.main-row {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+    }
+    .leaderboard tbody tr.main-row td:nth-child(1) {
+      grid-row: 1; grid-column: 1;
+    }
+    .leaderboard tbody tr.main-row td.model-name {
+      grid-row: 2; grid-column: 1 / -1;
+      padding-top: 1px; padding-bottom: 6px;
+    }
+    .leaderboard tbody tr.main-row td:nth-child(3) {
+      grid-row: 1; grid-column: 2;
+      text-align: right;
+    }
+    .leaderboard tbody tr.main-row td:nth-child(5) {
+      grid-row: 1; grid-column: 3;
+    }
   }
 </style>
 </head>
@@ -540,7 +559,7 @@
       <img src="disheval.jpg" alt="DishEval live evaluation feed">
       <div class="vignette"></div><div class="webcam-tint"></div><div class="webcam-overlay"></div>
       <div class="webcam-hud-bottom">
-        <div><div>STATUS: <span style="color:var(--red)">TASK FAILED</span></div><div style="color:var(--red)">DISHES REMAIN IN DISHWASHER</div></div>
+        <div><div>STATUS: <span style="color:var(--red)">TASK FAILED</span></div><div style="color:var(--red)">DISHES REMAIN</div></div>
         <div class="detection-box">0 dishes put away</div>
       </div>
     </div>
